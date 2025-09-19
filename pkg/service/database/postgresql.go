@@ -51,11 +51,9 @@ func (p *PostgreSQL) Start(ctx context.Context) error {
 }
 
 func (p *PostgreSQL) Stop(_ context.Context) error {
-	if p.pool == nil {
-		return nil
+	if p.pool != nil {
+		p.pool.Close()
 	}
-
-	p.pool.Close()
 
 	return nil
 }
