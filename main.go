@@ -12,9 +12,9 @@ import (
 )
 
 func main() {
-	s := boot.NewApp("credit-backend")
+	s := boot.NewApp("credit-backend", boot.NewConfig())
 
-	sqlite := s.SQLite("file:./test.db?mode=memory&cache=shared")
+	sqlite := s.SQLite()
 
 	hs := func() *http.Server {
 		return container.RegisterNamed(s.Container(), "http-server", func() *http.Server {
