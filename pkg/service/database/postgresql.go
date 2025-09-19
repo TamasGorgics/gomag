@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/TamasGorgics/gomag/pkg/container"
 	"github.com/TamasGorgics/gomag/pkg/manager"
+	"github.com/TamasGorgics/gomag/pkg/service"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -16,23 +18,28 @@ type PostgreSQL struct {
 	pool *pgxpool.Pool
 }
 
-func NewPostgreSQL(dsn string) *PostgreSQL {
-	cfg, err := pgxpool.ParseConfig(dsn)
-	if err != nil {
-		panic(err)
-	}
+func NewPostgreSQL(service *service.Service, dsn string) *PostgreSQL {
+	return container.RegisterNamed(service.Container(), "postgresql", func() *PostgreSQL {
+		cfg, err := pgxpool.ParseConfig(dsn)
+		if err != nil {
+			panic(err)
+		}
 
-	// Pool tuning – tailor to your workload
-	cfg.MaxConns = 10
-	cfg.MinConns = 2
-	cfg.HealthCheckPeriod = 30 * time.Second
-	cfg.MaxConnLifetime = 30 * time.Minute
-	cfg.MaxConnIdleTime = 5 * time.Minute
-	cfg.ConnConfig.ConnectTimeout = 3 * time.Second // per-connection timeout
+		// TODO add config for tuning
+		cfg.MaxConns = 10
+		cfg.MinConns = 2
+		cfg.HealthCheckPeriod = 30 * time.Second
+		cfg.MaxConnLifetime = 30 * time.Minute
+		cfg.MaxConnIdleTime = 5 * time.Minute
+		cfg.ConnConfig.ConnectTimeout = 3 * time.Second
 
-	return &PostgreSQL{
-		cfg: cfg,
-	}
+		postgresql := &PostgreSQL{
+			cfg: cfg,
+		}
+		service.Manage(postgresql)
+
+		return postgresql
+	})
 }
 
 func (p *PostgreSQL) Name() string {

@@ -8,20 +8,13 @@ import (
 
 	"github.com/TamasGorgics/gomag/internal/boot"
 	"github.com/TamasGorgics/gomag/pkg/container"
-	"github.com/TamasGorgics/gomag/pkg/service/database"
 	"github.com/TamasGorgics/gomag/pkg/service/httpworker"
 )
 
 func main() {
 	s := boot.NewApp("credit-backend")
 
-	sqlite := func() *database.SQLite {
-		return container.RegisterNamed(s.Container(), "sqlite", func() *database.SQLite {
-			return database.NewSQLite("file:./test.db?mode=memory&cache=shared")
-		})
-	}()
-
-	s.Manage(sqlite)
+	sqlite := s.SQLite("file:./test.db?mode=memory&cache=shared")
 
 	hs := func() *http.Server {
 		return container.RegisterNamed(s.Container(), "http-server", func() *http.Server {
