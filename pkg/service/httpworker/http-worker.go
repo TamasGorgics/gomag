@@ -5,7 +5,9 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/TamasGorgics/gomag/pkg/container"
 	"github.com/TamasGorgics/gomag/pkg/manager"
+	"github.com/TamasGorgics/gomag/pkg/service"
 )
 
 var _ manager.Node = (*HttpWorker)(nil)
@@ -14,10 +16,14 @@ type HttpWorker struct {
 	server *http.Server
 }
 
-func NewWorker(server *http.Server) *HttpWorker {
-	return &HttpWorker{
-		server: server,
-	}
+func New(service *service.Service, server *http.Server) *HttpWorker {
+	return container.RegisterNamed(service.Container(), "http-worker", func() *HttpWorker {
+		w := &HttpWorker{
+			server: server,
+		}
+		service.Manage(w)
+		return w
+	})
 }
 
 func (w *HttpWorker) Name() string {
