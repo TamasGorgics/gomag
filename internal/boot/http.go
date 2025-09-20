@@ -13,12 +13,20 @@ func (a *App) HTTPWorker() *httpworker.HttpWorker {
 	return container.RegisterNamed(a.Container(), "http-server", func() *httpworker.HttpWorker {
 		mux := http.NewServeMux()
 		mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			res, err := a.SQLite().DB.ExecContext(r.Context(), "SELECT 1")
+			tx, err := a.SQLite().DB.BeginTx(r.Context(), nil)
 			if err != nil {
 				log.Fatalf("gomag: %v", err)
 			}
-			ra, _ := res.RowsAffected()
-			log.Printf("gomag: %v", ra)
+			defer tx.Rollback()
+			live, err := a.HealthStorage().GetHealth(r.Context(), tx)
+			if err != nil {
+				log.Fatalf("gomag: %v", err)
+			}
+			if !live {
+				w.WriteHeader(http.StatusServiceUnavailable)
+				return
+			}
+
 			for i := range 5 {
 				time.Sleep(1 * time.Second)
 				log.Printf("http-server: %d", i)
