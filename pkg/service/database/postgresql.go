@@ -2,39 +2,27 @@ package database
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/TamasGorgics/gomag/pkg/container"
 	"github.com/TamasGorgics/gomag/pkg/manager"
 	"github.com/TamasGorgics/gomag/pkg/service"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 var _ manager.Node = (*PostgreSQL)(nil)
 
 type PostgreSQL struct {
-	cfg  *pgxpool.Config
-	pool *pgxpool.Pool
+	dsn string
+	db  *sql.DB
 }
 
 func NewPostgreSQL(service *service.Service, dsn string) *PostgreSQL {
 	return container.RegisterNamed(service.Container(), "postgresql", func() *PostgreSQL {
-		cfg, err := pgxpool.ParseConfig(dsn)
-		if err != nil {
-			panic(err)
-		}
-
-		// TODO add config for tuning
-		cfg.MaxConns = 10
-		cfg.MinConns = 2
-		cfg.HealthCheckPeriod = 30 * time.Second
-		cfg.MaxConnLifetime = 30 * time.Minute
-		cfg.MaxConnIdleTime = 5 * time.Minute
-		cfg.ConnConfig.ConnectTimeout = 3 * time.Second
-
 		postgresql := &PostgreSQL{
-			cfg: cfg,
+			dsn: dsn,
 		}
 		service.Manage(postgresql)
 
@@ -47,19 +35,34 @@ func (p *PostgreSQL) Name() string {
 }
 
 func (p *PostgreSQL) Start(ctx context.Context) error {
-	pool, err := pgxpool.NewWithConfig(ctx, p.cfg)
+	db, err := sql.Open("pgx", p.dsn)
 	if err != nil {
 		return fmt.Errorf("new pool: %w", err)
 	}
 
-	p.pool = pool
+	p.db = db
+
+	// TODO add config for tuning
+	db.SetMaxOpenConns(100)
+	db.SetMaxIdleConns(100)
+	db.SetConnMaxIdleTime(5 * time.Minute)
+	db.SetConnMaxLifetime(30 * time.Minute)
+
+	pingCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := db.PingContext(pingCtx); err != nil {
+		log.Fatalf("Unable to connect to database: %v\n", err)
+	}
+
+	log.Printf("Successfully connected to the database!")
 
 	return nil
 }
 
 func (p *PostgreSQL) Stop(_ context.Context) error {
-	if p.pool != nil {
-		p.pool.Close()
+	if p.db != nil {
+		p.db.Close()
 	}
 
 	return nil
