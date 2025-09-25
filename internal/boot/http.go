@@ -5,6 +5,7 @@ import (
 
 	"github.com/TamasGorgics/gomag/internal/infra/controllers/health"
 	"github.com/TamasGorgics/gomag/pkg/container"
+	"github.com/TamasGorgics/gomag/pkg/middleware"
 	"github.com/TamasGorgics/gomag/pkg/service/httpworker"
 )
 
@@ -14,7 +15,7 @@ func (a *App) HTTPWorker() *httpworker.HttpWorker {
 		mux.Handle("GET /health", a.HealthController())
 		srv := &http.Server{
 			Addr:    ":8080",
-			Handler: mux,
+			Handler: middleware.RequestID(mux),
 		}
 		return httpworker.New(a.Service, srv)
 	})
