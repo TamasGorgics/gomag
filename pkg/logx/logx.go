@@ -19,6 +19,6 @@ var (
 	Error func(context.Context, string, ...any)
 )
 
-func Register(l logger) {
+func Register(l Logger) {
 	// TODO
 }
