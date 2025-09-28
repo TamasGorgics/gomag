@@ -2,6 +2,9 @@ package logx
 
 import (
 	"context"
+	"log/slog"
+
+	defaultlogger "github.com/TamasGorgics/gomag/pkg/logx/internal/default"
 )
 
 type Logger interface {
@@ -13,6 +16,7 @@ type Logger interface {
 	With(ctx context.Context, key string, val any) context.Context
 }
 
+// Global variables for convenience
 var (
 	Debug func(context.Context, string, ...any)
 	Info  func(context.Context, string, ...any)
@@ -22,11 +26,20 @@ var (
 	With  func(ctx context.Context, key string, val any) context.Context
 )
 
-func Register(l Logger) {
+func register(l Logger) {
+	if l == nil {
+		return
+	}
+
 	Debug = l.Debug
 	Info = l.Info
 	Warn = l.Warn
 	Error = l.Error
 	Fatal = l.Fatal
 	With = l.With
+}
+
+func InitDefaultLogger() {
+	l := defaultlogger.NewDefaultLogger(slog.LevelInfo)
+	register(l)
 }
