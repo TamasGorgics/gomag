@@ -34,14 +34,14 @@ func (l *DefaultLogger) Warn(ctx context.Context, format string, args ...any) {
 
 func (l *DefaultLogger) Error(ctx context.Context, err error, format string, args ...any) {
 	if err != nil {
-		l.logger.ErrorContext(ctx, fmt.Sprintf("%s (%s)", err.Error(), fmt.Sprintf(format, args...)), nil)
+		l.logger.ErrorContext(ctx, fmt.Sprintf("%s (%s)", err.Error(), fmt.Sprintf(format, args...)))
 	} else {
 		l.logger.ErrorContext(ctx, format, args...)
 	}
 }
 
 func (l *DefaultLogger) Fatal(ctx context.Context, err error, format string, args ...any) {
-	l.logger.ErrorContext(ctx, fmt.Sprintf("%s (%s)", err.Error(), fmt.Sprintf(format, args...)), nil)
+	l.logger.ErrorContext(ctx, fmt.Sprintf("%s (%s)", err.Error(), fmt.Sprintf(format, args...)))
 	panic(format)
 }
 
