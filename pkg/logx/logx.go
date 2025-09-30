@@ -39,7 +39,8 @@ func register(l Logger) {
 	With = l.With
 }
 
-func InitDefaultLogger() {
+func InitDefaultLogger() Logger {
 	l := defaultlogger.NewDefaultLogger(slog.LevelInfo)
 	register(l)
+	return l
 }

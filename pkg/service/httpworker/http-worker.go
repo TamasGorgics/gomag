@@ -2,10 +2,10 @@ package httpworker
 
 import (
 	"context"
-	"log"
 	"net/http"
 
 	"github.com/TamasGorgics/gomag/pkg/container"
+	"github.com/TamasGorgics/gomag/pkg/logx"
 	"github.com/TamasGorgics/gomag/pkg/manager"
 	"github.com/TamasGorgics/gomag/pkg/service"
 )
@@ -30,10 +30,10 @@ func (w *HttpWorker) Name() string {
 	return "http-worker"
 }
 
-func (w *HttpWorker) Start(_ context.Context) error {
+func (w *HttpWorker) Start(ctx context.Context) error {
 	go func() {
 		if err := w.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Printf("http-worker: %v", err)
+			logx.Error(ctx, err, "http-worker: failed to listen and serve")
 		}
 	}()
 	return nil

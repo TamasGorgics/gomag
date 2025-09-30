@@ -2,7 +2,6 @@ package manager
 
 import (
 	"context"
-	"log"
 )
 
 type (
@@ -13,12 +12,15 @@ type (
 	}
 
 	Manager struct {
-		nodes []Node
+		nodes  []Node
+		logger Logger
 	}
 )
 
-func New() *Manager {
-	return &Manager{}
+func New(logger Logger) *Manager {
+	return &Manager{
+		logger: logger,
+	}
 }
 
 func (m *Manager) AddNode(node Node) {
@@ -26,14 +28,15 @@ func (m *Manager) AddNode(node Node) {
 }
 
 func (m *Manager) Start(ctx context.Context) error {
-	log.Printf("manager: starting %d nodes", len(m.nodes))
+	m.logger.Info(ctx, "manager: starting nodes", "count", len(m.nodes))
 	for _, node := range m.nodes {
 		err := func() error {
-			log.Printf("manager: starting node %s", node.Name())
+			m.logger.Info(ctx, "manager: starting node", "node", node.Name())
 			return node.Start(ctx)
 		}()
 
 		if err != nil {
+			m.logger.Error(ctx, err, "manager: failed to start node", "node", node.Name())
 			return err
 		}
 	}
@@ -41,14 +44,15 @@ func (m *Manager) Start(ctx context.Context) error {
 }
 
 func (m *Manager) Stop(ctx context.Context) error {
-	log.Printf("manager: stopping %d nodes", len(m.nodes))
+	m.logger.Info(ctx, "manager: stopping nodes", "count", len(m.nodes))
 	for _, node := range m.nodes {
 		err := func() error {
-			log.Printf("manager: stopping node %s", node.Name())
+			m.logger.Info(ctx, "manager: stopping node", "node", node.Name())
 			return node.Stop(ctx)
 		}()
 
 		if err != nil {
+			m.logger.Error(ctx, err, "manager: failed to stop node", "node", node.Name())
 			return err
 		}
 	}

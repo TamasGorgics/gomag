@@ -4,10 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/TamasGorgics/gomag/pkg/container"
+	"github.com/TamasGorgics/gomag/pkg/logx"
 	"github.com/TamasGorgics/gomag/pkg/manager"
 	"github.com/TamasGorgics/gomag/pkg/service"
 )
@@ -52,10 +52,10 @@ func (p *PostgreSQL) Start(ctx context.Context) error {
 	defer cancel()
 
 	if err := db.PingContext(pingCtx); err != nil {
-		log.Fatalf("Unable to connect to database: %v\n", err)
+		logx.Fatal(ctx, err, "Unable to connect to database")
 	}
 
-	log.Printf("Successfully connected to the database!")
+	logx.Info(ctx, "Successfully connected to the database!")
 
 	return nil
 }

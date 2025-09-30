@@ -2,13 +2,13 @@ package service
 
 import (
 	"context"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
 	"github.com/TamasGorgics/gomag/pkg/container"
+	"github.com/TamasGorgics/gomag/pkg/logx"
 	"github.com/TamasGorgics/gomag/pkg/manager"
 )
 
@@ -16,13 +16,17 @@ type Service struct {
 	name      string
 	container *container.Container
 	manager   *manager.Manager
+	logger    logx.Logger
 }
 
 func New(name string) *Service {
+	logger := logx.InitDefaultLogger()
+
 	return &Service{
 		name:      name,
 		container: container.New(),
-		manager:   manager.New(),
+		manager:   manager.New(logger),
+		logger:    logger,
 	}
 }
 
@@ -47,7 +51,7 @@ func (s *Service) Run() error {
 	}
 
 	<-ctx.Done()
-	log.Printf("service: %s received shutdown signal", s.name)
+	s.logger.Info(ctx, "service: received shutdown signal", "name", s.name)
 
 	stopCtx, stopCancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer stopCancel()
