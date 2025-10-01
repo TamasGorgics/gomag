@@ -61,3 +61,7 @@ func (s *Service) Run() error {
 
 	return nil
 }
+
+func (s *Service) Logger() logx.Logger {
+	return s.logger
+}

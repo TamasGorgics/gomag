@@ -15,7 +15,7 @@ func (a *App) HTTPWorker() *httpworker.HttpWorker {
 		mux.Handle("GET /health", a.HealthController())
 		srv := &http.Server{
 			Addr:    ":8080",
-			Handler: middleware.RequestID(mux),
+			Handler: middleware.RequestID(middleware.Logging(a.Service.Logger(), mux)),
 		}
 		return httpworker.New(a.Service, srv)
 	})
