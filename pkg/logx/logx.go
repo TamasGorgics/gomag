@@ -5,6 +5,7 @@ import (
 	"log/slog"
 
 	defaultlogger "github.com/TamasGorgics/gomag/pkg/logx/internal/default"
+	locallogger "github.com/TamasGorgics/gomag/pkg/logx/internal/local"
 )
 
 type Logger interface {
@@ -41,6 +42,12 @@ func register(l Logger) {
 
 func InitDefaultLogger() Logger {
 	l := defaultlogger.NewDefaultLogger(slog.LevelInfo)
+	register(l)
+	return l
+}
+
+func InitLocalLogger() Logger {
+	l := locallogger.NewLocalLogger(slog.LevelDebug)
 	register(l)
 	return l
 }
