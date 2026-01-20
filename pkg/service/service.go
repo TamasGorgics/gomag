@@ -19,15 +19,23 @@ type Service struct {
 	logger    logx.Logger
 }
 
-func New(name string) *Service {
-	logger := logx.InitDefaultLogger()
-
-	return &Service{
+func New(name string, options ...ServiceOptions) *Service {
+	s := &Service{
 		name:      name,
 		container: container.New(),
-		manager:   manager.New(logger),
-		logger:    logger,
 	}
+
+	for _, option := range options {
+		option(s)
+	}
+
+	if s.logger == nil {
+		WithLogger(logx.InitLocalLogger())(s)
+	}
+
+	s.manager = manager.New(s.logger)
+
+	return s
 }
 
 func (s *Service) Name() string {

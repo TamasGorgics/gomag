@@ -8,15 +8,15 @@ import (
 )
 
 func main() {
-	app := boot.NewApp("credit-backend", boot.NewConfig())
-	logx.Info(context.Background(), "Starting credit backend")
+	app := boot.NewApp("backend", boot.NewConfig())
+	logx.Info(context.Background(), "Starting backend")
 
 	app.SQLite()
 	app.HTTPWorker()
 
 	if err := app.Run(); err != nil {
-		logx.Fatal(context.Background(), err, "Failed to run credit backend")
+		logx.Fatal(context.Background(), err, "Failed to run backend")
 	}
 
-	logx.Info(context.Background(), "Credit backend done")
+	logx.Info(context.Background(), "Backend done")
 }
