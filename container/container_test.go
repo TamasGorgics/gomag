@@ -3,7 +3,7 @@ package container_test
 import (
 	"testing"
 
-	"github.com/TamasGorgics/gomag/pkg/container"
+	"github.com/TamasGorgics/gomag/container"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

@@ -4,10 +4,10 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/TamasGorgics/gomag/pkg/container"
-	"github.com/TamasGorgics/gomag/pkg/logx"
-	"github.com/TamasGorgics/gomag/pkg/manager"
-	"github.com/TamasGorgics/gomag/pkg/service"
+	"github.com/TamasGorgics/gomag/container"
+	"github.com/TamasGorgics/gomag/logx"
+	"github.com/TamasGorgics/gomag/manager"
+	"github.com/TamasGorgics/gomag/service"
 )
 
 var _ manager.Node = (*HttpWorker)(nil)

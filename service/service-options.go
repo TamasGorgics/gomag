@@ -1,6 +1,6 @@
 package service
 
-import "github.com/TamasGorgics/gomag/pkg/logx"
+import "github.com/TamasGorgics/gomag/logx"
 
 type ServiceOptions func(*Service)
 

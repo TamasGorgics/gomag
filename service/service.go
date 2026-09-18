@@ -7,9 +7,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/TamasGorgics/gomag/pkg/container"
-	"github.com/TamasGorgics/gomag/pkg/logx"
-	"github.com/TamasGorgics/gomag/pkg/manager"
+	"github.com/TamasGorgics/gomag/container"
+	"github.com/TamasGorgics/gomag/logx"
+	"github.com/TamasGorgics/gomag/manager"
 )
 
 type Service struct {

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/TamasGorgics/gomag/pkg/logx"
+	"github.com/TamasGorgics/gomag/logx"
 )
 
 func TestLocalLogger(t *testing.T) {

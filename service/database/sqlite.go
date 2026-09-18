@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/TamasGorgics/gomag/pkg/container"
-	"github.com/TamasGorgics/gomag/pkg/manager"
-	"github.com/TamasGorgics/gomag/pkg/service"
+	"github.com/TamasGorgics/gomag/container"
+	"github.com/TamasGorgics/gomag/logx"
+	"github.com/TamasGorgics/gomag/manager"
+	"github.com/TamasGorgics/gomag/service"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -63,7 +64,28 @@ func (s *SQLite) Name() string {
 	return "sqlite"
 }
 
-func (s *SQLite) Start(_ context.Context) error {
+func (s *SQLite) Start(ctx context.Context) error {
+	createTableSQL := `
+		CREATE TABLE IF NOT EXISTS tasks (
+		id TEXT PRIMARY KEY,
+		title TEXT NOT NULL,
+		description TEXT NOT NULL,
+		completed INTEGER NOT NULL,
+		created_at DATETIME NOT NULL,
+		updated_at DATETIME NOT NULL,
+		actor_name TEXT NOT NULL,
+		version INTEGER NOT NULL
+	);
+	`
+
+	// 3. Execute the SQL statement
+	_, err := s.DB.Exec(createTableSQL)
+	if err != nil {
+		logx.Fatal(ctx, err, "Failed to run database migration")
+	}
+
+	logx.Info(ctx, "Database migration was succesful!")
+
 	return nil
 }
 

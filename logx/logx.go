@@ -4,8 +4,8 @@ import (
 	"context"
 	"log/slog"
 
-	defaultlogger "github.com/TamasGorgics/gomag/pkg/logx/internal/default"
-	locallogger "github.com/TamasGorgics/gomag/pkg/logx/internal/local"
+	defaultlogger "github.com/TamasGorgics/gomag/logx/internal/default"
+	locallogger "github.com/TamasGorgics/gomag/logx/internal/local"
 )
 
 type Logger interface {
