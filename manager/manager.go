@@ -40,6 +40,8 @@ func (m *Manager) Start(ctx context.Context) error {
 			return err
 		}
 	}
+	m.logger.Info(ctx, "manager: all nodes started successfully")
+
 	return nil
 }
 
@@ -56,5 +58,7 @@ func (m *Manager) Stop(ctx context.Context) error {
 			return err
 		}
 	}
+	m.logger.Info(ctx, "manager: all nodes stopped successfully")
+
 	return nil
 }
