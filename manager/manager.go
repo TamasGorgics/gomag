@@ -2,6 +2,7 @@ package manager
 
 import (
 	"context"
+	"time"
 )
 
 type (
@@ -47,10 +48,14 @@ func (m *Manager) Start(ctx context.Context) error {
 
 func (m *Manager) Stop(ctx context.Context) error {
 	m.logger.Info(ctx, "manager: stopping nodes", "count", len(m.nodes))
+
+	stopCtx, stopCancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer stopCancel()
+
 	for _, node := range m.nodes {
 		err := func() error {
 			m.logger.Info(ctx, "manager: stopping node", "node", node.Name())
-			return node.Stop(ctx)
+			return node.Stop(stopCtx)
 		}()
 
 		if err != nil {

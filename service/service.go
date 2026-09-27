@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/TamasGorgics/gomag/container"
 	"github.com/TamasGorgics/gomag/logx"
@@ -61,9 +60,7 @@ func (s *Service) Run() error {
 	<-ctx.Done()
 	s.logger.Info(ctx, "service: received shutdown signal", "name", s.name)
 
-	stopCtx, stopCancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer stopCancel()
-	if err := s.manager.Stop(stopCtx); err != nil {
+	if err := s.manager.Stop(ctx); err != nil {
 		return err
 	}
 
